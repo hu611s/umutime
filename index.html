@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UMU TIME - Pomodoro Focus Timer</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Toast Notification Container -->
+    <div id="toastContainer" class="toast-container"></div>
+    
+    <!-- Loading Screen -->
+    <div id="loadingScreen" class="loading-screen hidden">
+        <div class="loading-container">
+            <div class="loading-city">
+                <div class="loading-building" style="animation-delay: 0s">🏠</div>
+                <div class="loading-building" style="animation-delay: 0.3s">🏢</div>
+                <div class="loading-building" style="animation-delay: 0.6s">🏫</div>
+                <div class="loading-building" style="animation-delay: 0.9s">🏭</div>
+                <div class="loading-building" style="animation-delay: 1.2s">🏥</div>
+            </div>
+            <div class="loading-text" id="loadingText">Building your city...</div>
+            <div class="loading-dots">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Welcome Screen -->
+    <div id="welcomeScreen" class="welcome-screen">
+        <div class="welcome-container">
+            <div class="top-controls">
+                <button id="settingsBtn" class="control-btn-top settings-btn">⚙️</button>
+                <button id="signInBtn" class="control-btn-top signin-btn">
+                    <span class="signin-icon">👤</span>
+                    <span class="signin-text" data-i18n="signIn">Sign In</span>
+                </button>
+            </div>
+            
+            <div class="title-section">
+                <h1 class="main-title">
+                    UMU<span class="title-city">TIME</span>
+                </h1>
+                <div class="title-icons">
+                    <div class="icon">🏠</div>
+                    <div class="icon">⏰</div>
+                    <div class="icon">🏢</div>
+                    <div class="icon">🏥</div>
+                </div>
+            </div>
+            
+            <div class="welcome-box">
+                <div class="welcome-grid">
+                    <!-- Left Column -->
+                    <div class="welcome-column">
+                        <!-- Work Session Selection -->
+                        <div class="session-selection compact">
+                            <h2 data-i18n="selectSession">Select Session Length</h2>
+                            <div class="session-cards">
+                                <div class="time-card" data-time="15">
+                                    <div class="card-time">15</div>
+                                    <div class="card-label" data-i18n="min">min</div>
+                                </div>
+                                <div class="time-card active" data-time="25">
+                                    <div class="card-time">25</div>
+                                    <div class="card-label" data-i18n="min">min</div>
+                                </div>
+                                <div class="time-card" data-time="30">
+                                    <div class="card-time">30</div>
+                                    <div class="card-label" data-i18n="min">min</div>
+                                </div>
+                                <div class="time-card custom-card" id="customWorkCard">
+                                    <div class="card-time">+</div>
+                                    <div class="card-label" data-i18n="custom">Custom</div>
+                                </div>
+                            </div>
+                            <div id="customWorkInput" class="custom-input-box hidden">
+                                <input type="number" id="customMinutes" min="1" max="120" placeholder="Minutes">
+                                <button id="setCustomWork" class="confirm-btn">✓</button>
+                            </div>
+                        </div>
+
+                        <!-- Sessions Counter -->
+                        <div class="session-selection compact">
+                            <h2 data-i18n="selectSessions">Number of Sessions</h2>
+                            <div class="sessions-slider-wrapper">
+                                <input type="range" id="sessionsSlider" min="1" max="10" value="4" class="sessions-slider">
+                                <div class="sessions-value">
+                                    <span id="sessionsValue">4</span> <span data-i18n="sessions">sessions</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column -->
+                    <div class="welcome-column">
+                        <!-- Break Selection -->
+                        <div class="session-selection compact">
+                            <h2 data-i18n="selectBreak">Select Break Length</h2>
+                            <div class="break-cards">
+                                <div class="break-card active" data-time="5">
+                                    <div class="break-time">5</div>
+                                    <div class="break-label" data-i18n="min">min</div>
+                                </div>
+                                <div class="break-card" data-time="10">
+                                    <div class="break-time">10</div>
+                                    <div class="break-label" data-i18n="min">min</div>
+                                </div>
+                                <div class="break-card" data-time="15">
+                                    <div class="break-time">15</div>
+                                    <div class="break-label" data-i18n="min">min</div>
+                                </div>
+                                <div class="break-card custom-card" id="customBreakCard">
+                                    <div class="break-time">+</div>
+                                    <div class="break-label" data-i18n="custom">Custom</div>
+                                </div>
+                            </div>
+                            <div id="customBreakInput" class="custom-input-box hidden">
+                                <input type="number" id="customBreakMinutes" min="1" max="60" placeholder="Minutes">
+                                <button id="setCustomBreak" class="confirm-btn">✓</button>
+                            </div>
+                        </div>
+
+                        <!-- City Name -->
+                        <div class="city-name-section compact">
+                            <h2 data-i18n="nameCity">Name Your City</h2>
+                            <div class="input-wrapper">
+                                <span class="input-icon">💰</span>
+                                <input type="text" id="cityNameInput" data-i18n-placeholder="cityName" placeholder="City Name">
+                                <span class="input-icon">🌱</span>
+                            </div>
+                            <button id="startBtn" class="start-btn" data-i18n="startBuilding">START BUILDING</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Footer -->
+            <div class="welcome-footer">
+                <div class="footer-email">Umu4time@gmail.com</div>
+                <a href="https://instagram.com/hu611s" target="_blank" class="footer-instagram">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                    </svg>
+                    <span>@hu611s</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Screen -->
+    <div id="gameScreen" class="game-screen hidden">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <button id="settingsBtnGame" class="control-btn-top settings-btn">⚙️</button>
+            <button id="musicBtn" class="control-btn-top music-btn">
+                <span class="music-icon">🎵</span>
+            </button>
+            <button id="flashcardsBtn" class="control-btn-top flashcards-btn">
+                <span class="flashcard-icon">🎴</span>
+            </button>
+            <button id="signInBtnGame" class="control-btn-top signin-btn">
+                <span class="signin-icon">👤</span>
+                <span class="signin-text" data-i18n="signIn">Sign In</span>
+            </button>
+            <div class="currency-box">
+                <span class="currency-icon">💰</span>
+                <span id="coinsDisplay" class="currency-value">50</span>
+            </div>
+            <div class="currency-box">
+                <span class="currency-icon">⭐</span>
+                <span id="starsDisplay" class="currency-value">75</span>
+            </div>
+            <button id="premiumBtn" class="premium-btn" data-i18n="goPremium">Go Premium!</button>
+        </div>
+
+        <div class="main-content">
+            <!-- Left Sidebar -->
+            <div class="sidebar">
+                <!-- Timer -->
+                <div class="timer-box">
+                    <h2 data-i18n="focusTimer">Focus Timer</h2>
+                    <div id="timerDisplay" class="timer-display">25:00</div>
+                    <div class="timer-label" id="timerLabel" data-i18n="workSession">WORK SESSION</div>
+                    
+                    <!-- Progress Bar -->
+                    <div class="timer-progress">
+                        <div id="progressBar" class="progress-fill"></div>
+                    </div>
+                    
+                    <!-- Sessions Counter -->
+                    <div class="sessions-counter">
+                        <span data-i18n="session">Session</span>
+                        <span id="currentSession">1</span> / <span id="totalSessions">4</span>
+                    </div>
+                    
+                    <div class="timer-controls">
+                        <button id="playPauseBtn" class="control-btn play-btn">
+                            <span id="playIcon">▶</span>
+                            <span id="playText" data-i18n="start">Start</span>
+                        </button>
+                        <button id="resetBtn" class="control-btn reset-btn">↻</button>
+                        <button id="endSessionBtn" class="control-btn end-session-btn" data-i18n="endSession">إنهاء الجلسة</button>
+                    </div>
+                    
+                    <div id="buildingStatus" class="building-status hidden">
+                        🔒 <span data-i18n="buildingLocked">Building locked during session</span>
+                    </div>
+                </div>
+
+                <!-- Tasks Menu -->
+                <div class="tasks-menu">
+                    <h2 data-i18n="tasks">TASKS</h2>
+                    <div class="task-input-wrapper">
+                        <input type="text" id="taskInput" data-i18n-placeholder="addTask" placeholder="Add a task...">
+                        <button id="addTaskBtn" class="add-task-btn">+</button>
+                    </div>
+                    <div id="tasksList" class="tasks-list">
+                        <!-- Tasks will be added by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Build Menu -->
+                <div class="build-menu">
+                    <div class="build-header">
+                        <h2 data-i18n="buildMenu">BUILD MENU</h2>
+                        <button id="toggleBuildMenu" class="toggle-menu-btn">▼</button>
+                    </div>
+                    <div id="buildingsList" class="buildings-list">
+                        <!-- Buildings will be added by JavaScript -->
+                    </div>
+                    <button class="buy-land-btn">
+                        <span data-i18n="buyLand">BUY LAND</span>
+                        <span class="land-cost">💰 50</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Main Grid Area -->
+            <div class="grid-area">
+                <div class="grid-container">
+                    <div class="sky-background">
+                        <div id="cityGrid" class="city-grid">
+                            <!-- Grid cells will be added by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+ 
+                <div class="city-info">
+                    <div class="city-name-display">
+                        <span class="city-icon">🏙️</span>
+                        <span id="cityNameDisplay">My City</span>
+                    </div>
+                    <div class="population-display">
+                        <span class="pop-icon">👥</span>
+                        <span data-i18n="population">Population:</span> <span id="populationDisplay">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="modal hidden">
+        <div class="modal-content settings-modal-content">
+            <div class="modal-header">
+                <h2 data-i18n="settings">Settings</h2>
+                <button id="closeSettings" class="close-modal-btn">✕</button>
+            </div>
+            
+            <div class="settings-body">
+                <!-- Theme Setting -->
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <div class="setting-icon">🌙</div>
+                        <div class="setting-text">
+                            <div class="setting-title" data-i18n="themeMode">Theme Mode</div>
+                            <div class="setting-desc" data-i18n="themeModeDesc">Switch between light and dark mode</div>
+                        </div>
+                    </div>
+                    <div class="setting-control">
+                        <button id="themeToggle" class="toggle-btn">
+                            <span class="toggle-option active" data-i18n="lightMode">☀️ Light</span>
+                            <span class="toggle-option" data-i18n="darkMode">🌙 Dark</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Language Setting -->
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <div class="setting-icon">🌍</div>
+                        <div class="setting-text">
+                            <div class="setting-title" data-i18n="language">Language</div>
+                            <div class="setting-desc" data-i18n="languageDesc">Choose your preferred language</div>
+                        </div>
+                    </div>
+                    <div class="setting-control">
+                        <button id="langToggle" class="toggle-btn">
+                            <span class="toggle-option active" data-i18n="english">EN</span>
+                            <span class="toggle-option" data-i18n="arabic">AR</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tutorial Setting -->
+                <div class="setting-item setting-item-clickable" id="tutorialSetting">
+                    <div class="setting-info">
+                        <div class="setting-icon">❓</div>
+                        <div class="setting-text">
+                            <div class="setting-title" data-i18n="tutorial">Tutorial</div>
+                            <div class="setting-desc" data-i18n="tutorialDesc">Learn how to use Umutime</div>
+                        </div>
+                    </div>
+                    <div class="setting-control">
+                        <span class="setting-arrow">→</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sign In Modal -->
+    <div id="signInModal" class="modal hidden">
+        <div class="modal-content signin-modal-content">
+            <div class="modal-header">
+                <h2 id="authTitle" data-i18n="signIn">Sign In</h2>
+                <button id="closeSignIn" class="close-modal-btn">✕</button>
+            </div>
+            
+            <div class="signin-body">
+                <!-- Sign In Form -->
+                <div id="signInForm" class="auth-form">
+                    <div class="auth-info">
+                        <p data-i18n="saveProgressMsg">Sign in to save your progress and sync across devices!</p>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label data-i18n="username">Username</label>
+                        <input type="text" id="signInUsername" placeholder="username" class="auth-input">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label data-i18n="password">Password</label>
+                        <input type="password" id="signInPassword" placeholder="••••••••" class="auth-input">
+                    </div>
+                    
+                    <button id="signInSubmit" class="auth-btn primary-auth-btn" data-i18n="signInBtn">Sign In</button>
+                    
+                    <div class="auth-switch">
+                        <span data-i18n="noAccount">Don't have an account?</span>
+                        <button id="switchToSignUp" class="switch-btn" data-i18n="signUpLink">Sign Up</button>
+                    </div>
+                </div>
+
+                <!-- Sign Up Form -->
+                <div id="signUpForm" class="auth-form hidden">
+                    <div class="auth-info">
+                        <p data-i18n="createAccountMsg">Create an account to save your city forever!</p>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label data-i18n="username">Username</label>
+                        <input type="text" id="signUpUsername" placeholder="YourName" class="auth-input">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label data-i18n="password">Password</label>
+                        <input type="password" id="signUpPassword" placeholder="••••••••" class="auth-input">
+                    </div>
+                    
+                    <button id="signUpSubmit" class="auth-btn primary-auth-btn" data-i18n="createAccount">Create Account</button>
+                    
+                    <div class="auth-switch">
+                        <span data-i18n="haveAccount">Already have an account?</span>
+                        <button id="switchToSignIn" class="switch-btn" data-i18n="signInLink">Sign In</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Session Complete Modal -->
+    <div id="completeModal" class="modal hidden">
+        <div class="modal-content">
+            <h2 data-i18n="sessionComplete">Pomodoro Session Complete!</h2>
+            <div class="complete-info">
+                <div class="complete-row">
+                    <div class="complete-item">
+                        <span class="complete-icon">⏰</span>
+                        <span><span data-i18n="focusTime">Focus Time:</span> <span id="completedTime">25</span> <span data-i18n="mins">mins</span></span>
+                    </div>
+                    <div class="complete-item">
+                        <span class="complete-icon">👥</span>
+                        <span><span data-i18n="population">Population:</span> 🌳 <span id="completedPop">0</span></span>
+                    </div>
+                </div>
+                <div class="earnings-box">
+                    <span class="earnings-icon">⭐</span>
+                    <span class="earnings-label" data-i18n="earnings">Earnings:</span>
+                    <span id="earnedCoins" class="earnings-value">+25</span>
+                </div>
+                <div class="complete-actions">
+                    <button id="addMoreTimeBtn" class="action-btn add-time-btn" data-i18n="addMoreTime">Add More Time</button>
+                    <button id="exitSessionBtn" class="action-btn exit-btn" data-i18n="exitSession">Exit Session</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- End Session Modal -->
+    <div id="endSessionModal" class="modal hidden">
+        <div class="modal-content end-session-modal">
+            <div class="modal-header">
+                <h2 data-i18n="endSessionTitle">إنهاء الجلسة</h2>
+                <button id="closeEndSession" class="close-modal-btn">✕</button>
+            </div>
+            <div class="end-session-body">
+                <p data-i18n="endSessionMsg">هل تريد حفظ هذه الجلسة أم حذفها؟</p>
+                <div class="session-summary">
+                    <div class="summary-item">
+                        <span class="summary-icon">⏱️</span>
+                        <span class="summary-label" data-i18n="studyTime">وقت الدراسة:</span>
+                        <span id="summaryTime" class="summary-value">0</span>
+                        <span data-i18n="mins">دقيقة</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-icon">💰</span>
+                        <span class="summary-label" data-i18n="coinsEarned">العملات:</span>
+                        <span id="summaryCoins" class="summary-value">0</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-icon">✅</span>
+                        <span class="summary-label" data-i18n="tasksCompleted">المهام المنجزة:</span>
+                        <span id="summaryTasks" class="summary-value">0</span>
+                    </div>
+                </div>
+                <div class="end-session-actions">
+                    <button id="saveSessionBtn" class="action-btn save-session-btn" data-i18n="saveSession">💾 حفظ الجلسة</button>
+                    <button id="deleteSessionBtn" class="action-btn delete-session-btn" data-i18n="deleteSession">🗑️ حذف الجلسة</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- History Modal -->
+    <div id="historyModal" class="modal hidden">
+        <div class="modal-content history-modal-content">
+            <div class="modal-header">
+                <h2 data-i18n="history">السجل</h2>
+                <button id="closeHistory" class="close-modal-btn">✕</button>
+            </div>
+            <div class="history-body">
+                <div id="historyList" class="history-list">
+                    <!-- Sessions will be added here -->
+                </div>
+                <div id="emptyHistory" class="empty-history hidden">
+                    <div class="empty-icon">📜</div>
+                    <p data-i18n="noSessions">لا توجد جلسات محفوظة</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Session Details Modal -->
+    <div id="sessionDetailsModal" class="modal hidden">
+        <div class="modal-content session-details-modal">
+            <div class="modal-header">
+                <h2 data-i18n="sessionDetails">تفاصيل الجلسة</h2>
+                <button id="closeSessionDetails" class="close-modal-btn">✕</button>
+            </div>
+            <div class="session-details-body">
+                <div class="detail-section">
+                    <h3 data-i18n="sessionInfo">معلومات الجلسة</h3>
+                    <div class="detail-row">
+                        <span data-i18n="date">التاريخ:</span>
+                        <span id="detailDate"></span>
+                    </div>
+                    <div class="detail-row">
+                        <span data-i18n="studyTime">وقت الدراسة:</span>
+                        <span id="detailTime"></span>
+                    </div>
+                    <div class="detail-row">
+                        <span data-i18n="coinsEarned">العملات:</span>
+                        <span id="detailCoins"></span>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <h3 data-i18n="cityState">حالة المدينة</h3>
+                    <div id="detailCity" class="detail-city-grid"></div>
+                </div>
+
+                <div class="detail-section">
+                    <h3 data-i18n="tasksTitle">المهام</h3>
+                    <div id="detailTasks" class="detail-tasks-list"></div>
+                </div>
+
+                <div class="detail-actions">
+                    <button id="deleteSessionDetailBtn" class="action-btn delete-btn" data-i18n="deleteSession">حذف الجلسة</button>
+                    <button id="exportPDFBtn" class="action-btn export-btn" disabled data-i18n="exportPDF">تصدير PDF (قريباً)</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tutorial Modal -->
+    <div id="tutorialModal" class="modal hidden">
+        <div class="modal-content tutorial-modal-content">
+            <button id="closeTutorial" class="close-modal-btn">✕</button>
+            
+            <div class="tutorial-container">
+                <div class="tutorial-step active" data-step="1">
+                    <div class="tutorial-icon-large">🕒</div>
+                    <h2 data-i18n="tutorialStep1Title">ما هو Umutime؟</h2>
+                    <p data-i18n="tutorialStep1Text">أهلاً! أنا حسين، مصمم ومبرمج Umutime. هذا الموقع لإدارة الوقت والتركيز، يساعدك على تنظيم يومك باستخدام جلسات تركيز واضحة. في Umutime، الوقت لا يمر فقط… بل يتحوّل إلى إنجاز وتقدم مرئي.</p>
+                    <div class="tutorial-image">
+                        <div class="tutorial-timer-demo">⏱️</div>
+                        <div class="tutorial-city-bg">🏙️</div>
+                    </div>
+                </div>
+
+                <div class="tutorial-step" data-step="2">
+                    <div class="tutorial-icon-large">⏱️</div>
+                    <h2 data-i18n="tutorialStep2Title">جلسات التركيز</h2>
+                    <p data-i18n="tutorialStep2Text">اختر مدة التركيز التي تناسبك وابدأ الجلسة. أثناء عمل المؤقت، ركّز فقط على الدراسة أو العمل بدون تشتيت.</p>
+                    <div class="tutorial-image">
+                        <div class="tutorial-timer-working">
+                            <div class="timer-display-demo">25:00</div>
+                            <div class="progress-bar-demo"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tutorial-step" data-step="3">
+                    <div class="tutorial-icon-large">💰</div>
+                    <h2 data-i18n="tutorialStep3Title">الوقت = عملات</h2>
+                    <p data-i18n="tutorialStep3Text">كل دقيقة تركيز مكتملة تمنحك عملة واحدة. كلما ركّزت أكثر، حصلت على عملات أكثر.</p>
+                    <div class="tutorial-image">
+                        <div class="tutorial-coins-demo">
+                            <span class="coin-icon-demo">💰</span>
+                            <span class="coin-value-demo">+25</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tutorial-step" data-step="4">
+                    <div class="tutorial-icon-large">🔒</div>
+                    <h2 data-i18n="tutorialStep4Title">القفل أثناء التركيز</h2>
+                    <p data-i18n="tutorialStep4Text">أثناء جلسة التركيز، لا يمكنك البناء أو التعديل في المدينة. هذا النظام مصمم ليحمي تركيزك ويمنع التشتت.</p>
+                    <div class="tutorial-image">
+                        <div class="tutorial-locked-city">
+                            <span class="lock-icon-demo">🔒</span>
+                            <span class="city-demo">🏙️</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tutorial-step" data-step="5">
+                    <div class="tutorial-icon-large">☕</div>
+                    <h2 data-i18n="tutorialStep5Title">وقت الاستراحة = وقت البناء</h2>
+                    <p data-i18n="tutorialStep5Text">عند انتهاء جلسة التركيز وبدء وقت الاستراحة، يتم فتح المدينة. هنا يمكنك استخدام العملات التي حصلت عليها للبناء والتطوير.</p>
+                    <div class="tutorial-image">
+                        <div class="tutorial-building-demo">
+                            <span class="building-icon-demo">🏠</span>
+                            <span class="smoke-demo">💨</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tutorial-step" data-step="6">
+                    <div class="tutorial-icon-large">🏙️</div>
+                    <h2 data-i18n="tutorialStep6Title">المدينة والمباني</h2>
+                    <p data-i18n="tutorialStep6Text">المدينة تمثل تقدمك الحقيقي. كل مبنى تضعه هو نتيجة وقت ركّزت فيه بصدق.</p>
+                    <div class="tutorial-image">
+                        <div class="tutorial-grid-demo">
+                            <div class="grid-cell-demo">🏠</div>
+                            <div class="grid-cell-demo">🏢</div>
+                            <div class="grid-cell-demo">🏫</div>
+                            <div class="grid-cell-demo"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tutorial-step" data-step="7">
+                    <div class="tutorial-icon-large">✅</div>
+                    <h2 data-i18n="tutorialStep7Title">المهام اليومية والنقاط</h2>
+                    <p data-i18n="tutorialStep7Text">يمكنك إضافة مهام بسيطة أسفل المؤقت. عند إكمال أي مهمة، تحصل على 5 نقاط، وتظهر علامة ✓، ولا يمكن إزالة العلامة بعد الإكمال.</p>
+                    <div class="tutorial-image">
+                        <div class="tutorial-tasks-demo">
+                            <div class="task-demo completed">✓ مهمة منجزة</div>
+                            <div class="task-demo">⬜ مهمة جديدة</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tutorial-step" data-step="8">
+                    <div class="tutorial-icon-large">⭐</div>
+                    <h2 data-i18n="tutorialStep8Title">الفرق بين العملات والنقاط</h2>
+                    <p data-i18n="tutorialStep8Text">العملات 💰: تحصل عليها من كل دقيقة تركيز، تُستخدم للبناء. النقاط ⭐: تحصل عليها من إنجاز المهام، تعبّر عن التزامك اليومي.</p>
+                    <div class="tutorial-image">
+                        <div class="tutorial-comparison">
+                            <div class="comparison-item">
+                                <span>💰</span>
+                                <span>عملات</span>
+                            </div>
+                            <div class="comparison-divider">VS</div>
+                            <div class="comparison-item">
+                                <span>⭐</span>
+                                <span>نقاط</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tutorial-step" data-step="9">
+                    <div class="tutorial-icon-large">👤</div>
+                    <h2 data-i18n="tutorialStep9Title">ضيف أو تسجيل دخول</h2>
+                    <p data-i18n="tutorialStep9Text">يمكنك استخدام Umutime مباشرة كضيف بدون إنشاء حساب. تسجيل الدخول اختياري، ويُستخدم فقط لحفظ تقدمك ومزامنته بين الأجهزة.</p>
+                    <div class="tutorial-image">
+                        <div class="tutorial-user-demo">
+                            <div class="user-option">🎭 ضيف</div>
+                            <div class="user-option">👤 مستخدم</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tutorial-step" data-step="10">
+                    <div class="tutorial-icon-large">🎴</div>
+                    <h2 data-i18n="tutorialStep10Title">بطاقات المراجعة</h2>
+                    <p data-i18n="tutorialStep10Text">أنشئ بطاقات أسئلة وأجوبة لمراجعة دروسك. أضف 3 بطاقات على الأقل، ثم ابدأ المراجعة. اضغط على البطاقة لقلبها ورؤية الإجابة. مثالي للدراسة!</p>
+                    <div class="tutorial-image">
+                        <div class="tutorial-flashcard-demo">
+                            <div class="demo-card">
+                                <div class="demo-card-front">❓</div>
+                                <div class="demo-card-label">سؤال</div>
+                            </div>
+                            <div class="demo-flip-icon">→</div>
+                            <div class="demo-card">
+                                <div class="demo-card-back">✓</div>
+                                <div class="demo-card-label">إجابة</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tutorial-navigation">
+                    <button id="tutorialPrev" class="tutorial-nav-btn" disabled>
+                        <span>←</span>
+                    </button>
+                    <div class="tutorial-dots"></div>
+                    <button id="tutorialNext" class="tutorial-nav-btn">
+                        <span data-i18n="next">التالي</span>
+                        <span>→</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Flashcards Modal -->
+    <div id="flashcardsModal" class="modal hidden">
+        <div class="modal-content flashcards-modal-content">
+            <div class="modal-header">
+                <h2 id="flashcardsTitle" data-i18n="flashcards">بطاقات التعلم</h2>
+                <button id="closeFlashcards" class="close-modal-btn">✕</button>
+            </div>
+
+            <!-- Create Flashcards View -->
+            <div id="createFlashcardsView" class="flashcards-view">
+                <div class="flashcards-info">
+                    <p data-i18n="flashcardsInfo">أنشئ بطاقات أسئلة وأجوبة لمراجعة دروسك. الحد الأدنى 3 بطاقات.</p>
+                </div>
+
+                <div id="flashcardsList" class="flashcards-list">
+                    <!-- Flashcards will be added here -->
+                </div>
+
+                <button id="addFlashcard" class="add-flashcard-btn">
+                    <span>+</span>
+                    <span data-i18n="addFlashcard">إضافة بطاقة</span>
+                </button>
+
+                <div class="flashcards-actions">
+                    <button id="startReview" class="flashcard-action-btn primary" disabled data-i18n="startReview">ابدأ المراجعة</button>
+                    <button id="cancelCreate" class="flashcard-action-btn secondary" data-i18n="cancel">إلغاء</button>
+                </div>
+            </div>
+
+            <!-- Review Flashcards View -->
+            <div id="reviewFlashcardsView" class="flashcards-view hidden">
+                <div class="flashcard-counter">
+                    <span data-i18n="card">بطاقة</span>
+                    <span id="currentCardNumber">1</span>
+                    /
+                    <span id="totalCards">0</span>
+                </div>
+
+                <div id="flashcardReview" class="flashcard-review">
+                    <div class="flashcard-flip-container">
+                        <div class="flashcard-inner">
+                            <div class="flashcard-front">
+                                <div class="card-label" data-i18n="question">سؤال</div>
+                                <div class="card-content" id="reviewQuestion"></div>
+                                <div class="tap-hint" data-i18n="tapToReveal">اضغط لرؤية الإجابة</div>
+                            </div>
+                            <div class="flashcard-back">
+                                <div class="card-label" data-i18n="answer">إجابة</div>
+                                <div class="card-content" id="reviewAnswer"></div>
+                                <div class="reaction">💙</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="review-actions">
+                    <button id="nextCard" class="review-nav-btn" data-i18n="nextCard">التالي →</button>
+                    <button id="exitReview" class="review-exit-btn" data-i18n="exitReview">إنهاء المراجعة</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
